@@ -89,7 +89,7 @@ namespace TPS2.Account
             }
         }
 
-        // Remove phonenumber from user
+        // Remove phone number from user
         protected void RemovePhone_Click(object sender, EventArgs e)
         {
             var manager = Context.GetOwinContext().GetUserManager<ApplicationUserManager>();
