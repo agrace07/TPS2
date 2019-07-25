@@ -97,8 +97,11 @@ namespace TPS2.Models
 
     public class EmployeeModel
     {
-        public string UserId { get; set; }
-        public int PhoneNumber { get; set; }
+        public string AspNetUserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        //TODO Data type for this?
+        public string PhoneNumber { get; set; }
         public Address Location { get; set; }
         public bool WillingToRelocate { get; set; }
         public List<Experience> WorkExperience { get; set; }
