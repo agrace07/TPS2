@@ -18,7 +18,7 @@ namespace TPS2.Account
     {
         private readonly DBConnect _databaseConnection = new DBConnect();
         private EmployeeModel employee;
-        private bool dataExists = true;
+        //private bool dataExists = true;
 
         public List<State> StateList = new List<State>();
 
@@ -95,10 +95,10 @@ namespace TPS2.Account
                 employee = _databaseConnection.GetEmployeeModel(User.Identity.GetUserId());
                 if (employee.FirstName == null)
                 {
-                    dataExists = false;
+                    //dataExists = false;
                     return;
                 }
-                dataExists = true;
+                //dataExists = true;
                 //fill textboxes
                 FirstNameTextBox.Text = employee.FirstName;
                 LastNameTextBox.Text = employee.LastName;
@@ -184,9 +184,10 @@ namespace TPS2.Account
             };
 
             //TODO needs to know when to update and when to insert...
-            var spName = dataExists ? "UpdateEmployeeInfo" : "InsertEmployeeInfo";
+            //var spName = dataExists ? "UpdateEmployeeInfo" : "InsertEmployeeInfo";
+            var spName = "InsertEmployeeInfo";
             _databaseConnection.RunStoredProc(spName, parameters);
-            dataExists = true;
+            //dataExists = true;
 
             //if (_databaseConnection.RunStoredProc(spName, parameters))
             //    ScriptManager.RegisterStartupScript(this, GetType(), "Alert", "alert('Your information has been updated.');", true);

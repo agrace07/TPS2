@@ -188,6 +188,8 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Account\Web.config" />
+    <None Include="Properties\PublishProfiles\TPS20190710071236 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\TPS220190724090336 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
