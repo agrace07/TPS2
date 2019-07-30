@@ -76,6 +76,7 @@ namespace TPS2.Account
                     // Strip the query string from action
                     Form.Action = ResolveUrl("~/Account/Manage");
 
+                    //TODO Add message for successful update of data
                     SuccessMessage =
                         message == "ChangePwdSuccess" ? "Your password has been changed."
                         : message == "SetPwdSuccess" ? "Your password has been set."

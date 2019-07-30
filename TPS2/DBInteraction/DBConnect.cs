@@ -45,8 +45,10 @@ namespace TPS2.DBInteraction
             return true;
         }
         
-        public bool RunStoredProc(string spName, List<ParameterList> parameters)
+        public int RunStoredProc(string spName, List<ParameterList> parameters)
         {
+            int returnValue = 0;
+
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
@@ -61,11 +63,42 @@ namespace TPS2.DBInteraction
                 }
                 
                 cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
+                returnValue = cmd.ExecuteNonQuery();
+                //returnValue = (int) cmd.ExecuteScalar();
+
                 cmd.Connection.Close();
             }
 
-            return true;
+            return returnValue;
+        }
+
+        public int RunStoredProcReturnId(string spName, List<ParameterList> parameters)
+        {
+            int returnValue = 0;
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand(spName, con)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                foreach (var parameter in parameters)
+                {
+                    cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.Parameter);
+                    //TODO START HERE
+                 //   cmd.Parameters.Add("@ReturnId",)
+                }
+
+                cmd.Connection.Open();
+                //returnValue = cmd.ExecuteNonQuery();
+                returnValue = (int) cmd.ExecuteScalar();
+
+                cmd.Connection.Close();
+            }
+
+            return returnValue;
         }
 
         //TODO Employee stuff:
@@ -99,7 +132,7 @@ namespace TPS2.DBInteraction
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                string sql = "SELECT *FROM employee e JOIN EmployeeAddress ea on e.AddressID = ea.Id WHERE AspNetUserID = '" + aspNetUserId + "'";
+                var sql = "SELECT *FROM employee e JOIN EmployeeAddress ea on e.AddressID = ea.Id WHERE AspNetUserID = '" + aspNetUserId + "' AND Expired IS NULL";
                 var cmd = new SqlCommand(sql, con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
@@ -138,10 +171,50 @@ namespace TPS2.DBInteraction
 
 
         //TODO CustomerModel:
+        //Get available skills from DB
+        public List<Skill> GetSkillList()
+        {
+            var skillList = new List<Skill>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var sql = "SELECT * FROM Skills";
+
+                var cmd = new SqlCommand(sql, con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                try
+                {
+                    while (reader.Read())
+                    {
+                        skillList.Add(new Skill {Id = reader["Id"].ToString(), Name = reader["Name"].ToString()});
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+                finally
+                {
+                    cmd.Connection.Close();
+                }
+            }
+
+            return skillList;
+        }
+
         //-Add new request
         //-View existing requests
         //-Delete existing requests(use flag in DB, don't delete)
         //-Edit existing
+    }
+
+    public class Skill
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 
     public class ParameterList
