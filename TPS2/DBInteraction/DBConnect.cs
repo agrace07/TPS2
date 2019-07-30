@@ -64,7 +64,6 @@ namespace TPS2.DBInteraction
                 
                 cmd.Connection.Open();
                 returnValue = cmd.ExecuteNonQuery();
-                //returnValue = (int) cmd.ExecuteScalar();
 
                 cmd.Connection.Close();
             }
@@ -87,14 +86,16 @@ namespace TPS2.DBInteraction
                 foreach (var parameter in parameters)
                 {
                     cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.Parameter);
-                    //TODO START HERE
-                 //   cmd.Parameters.Add("@ReturnId",)
                 }
 
-                cmd.Connection.Open();
-                //returnValue = cmd.ExecuteNonQuery();
-                returnValue = (int) cmd.ExecuteScalar();
+                var param = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                param.Direction = ParameterDirection.Output;
 
+                cmd.Connection.Open();
+                returnValue = cmd.ExecuteNonQuery();
+                
+                var result = param.Value;
+                returnValue = (int) result;
                 cmd.Connection.Close();
             }
 

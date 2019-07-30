@@ -24,7 +24,7 @@
             <asp:TextBox runat="server" ID="ZipTextBox"></asp:TextBox>
             <dt>Telecommute Available?:</dt>
             <asp:CheckBox runat="server" ID="TelecommuteCheckBox"/>
-            <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>
         </dl>
+        <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>
     </div>
 </asp:Content>

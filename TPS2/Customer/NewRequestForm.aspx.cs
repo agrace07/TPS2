@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using TPS2.DBInteraction;
 
-//TODO Require authentication to get to this page
 namespace TPS2.Customer
 {
     public partial class NewRequestForm : System.Web.UI.Page
@@ -72,33 +69,36 @@ namespace TPS2.Customer
                 new ParameterList {ParameterName = "@Zip", Parameter = ZipTextBox.Text},
                 new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text},
                 new ParameterList {ParameterName = "@Telecommute", Parameter = TelecommuteCheckBox.Checked ? "1" : "0"}
-                //new ParameterList {ParameterName = "@ReturnVal", Parameter = ""}
             };
-            int clientRequestId = _databaseConnection.RunStoredProcReturnId("InsertClientRequest", parameters);
+            var clientRequestId = _databaseConnection.RunStoredProcReturnId("InsertClientRequest", parameters);
             
             
             //insert the skills
             
-            var RequiredItems = RequiredSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
-            foreach (var item in RequiredItems)
+            var requiredItems = RequiredSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
+            foreach (var item in requiredItems)
             {
-                var skillParameters = new List<ParameterList>();
+                var skillParameters = new List<ParameterList>
+                {
+                    new ParameterList {ParameterName = "@RequestId", Parameter = clientRequestId.ToString()},
+                    new ParameterList {ParameterName = "@SkillId", Parameter = item.Value},
+                    new ParameterList {ParameterName = "@Required", Parameter = "1"}
+                };
 
-                skillParameters.Add(new ParameterList{ParameterName = "@RequestId", Parameter = clientRequestId.ToString()});
-                skillParameters.Add(new ParameterList{ParameterName = "@SkillId", Parameter = item.Value });
-                skillParameters.Add(new ParameterList{ParameterName = "@Required", Parameter = "1" });
 
                 _databaseConnection.RunStoredProc("InsertClientRequestSkills", skillParameters);
             }
 
-            var RequestedItems = RequestedSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
-            foreach (var item in RequestedItems)
+            var requestedItems = RequestedSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
+            foreach (var item in requestedItems)
             {
-                var skillParameters = new List<ParameterList>();
+                var skillParameters = new List<ParameterList>
+                {
+                    new ParameterList {ParameterName = "@RequestId", Parameter = clientRequestId.ToString()},
+                    new ParameterList {ParameterName = "@SkillId", Parameter = item.Value},
+                    new ParameterList {ParameterName = "@Required", Parameter = "0"}
+                };
 
-                skillParameters.Add(new ParameterList { ParameterName = "@RequestId", Parameter = clientRequestId.ToString() });
-                skillParameters.Add(new ParameterList { ParameterName = "@SkillId", Parameter = item.Value });
-                skillParameters.Add(new ParameterList { ParameterName = "@Required", Parameter = "0" });
 
                 _databaseConnection.RunStoredProc("InsertClientRequestSkills", skillParameters);
             }
