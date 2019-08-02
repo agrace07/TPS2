@@ -11,10 +11,33 @@ namespace TPS2.Customer
         private readonly DBConnect _databaseConnection = new DBConnect();
         private List<Skill> _skillList = new List<Skill>();
 
+        protected string SuccessMessage
+        {
+            get;
+            private set;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                var message = Request.QueryString["m"];
+                if (message != null)
+                {
+                    // Strip the query string from action
+                    Form.Action = ResolveUrl("~/Customer/NewRequestForm");
+
+                    SuccessMessage =
+                        message == "AddRequestSuccess" ? "Your request has been added, you will receive an update within 48 hours."
+                        //: message == "SetPwdSuccess" ? "Your password has been set."
+                        //: message == "RemoveLoginSuccess" ? "The account was removed."
+                        //: message == "AddPhoneNumberSuccess" ? "Phone number has been added"
+                        //: message == "RemovePhoneNumberSuccess" ? "Phone number was removed"
+                        //: message == "UpdateInfoSuccess" ? "Your information has been updated"
+                        : String.Empty;
+                    successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
+                }
+
                 _skillList = _databaseConnection.GetSkillList();
 
                 //Get the skills from the DB
@@ -70,7 +93,7 @@ namespace TPS2.Customer
                 new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text},
                 new ParameterList {ParameterName = "@Telecommute", Parameter = TelecommuteCheckBox.Checked ? "1" : "0"}
             };
-            var clientRequestId = _databaseConnection.RunStoredProcReturnId("InsertClientRequest", parameters);
+            var clientRequestId = _databaseConnection.RunStoredProcReturnId(DBConnect.StoredProcs.InsertClientRequest, parameters);
             
             
             //insert the skills
@@ -85,8 +108,7 @@ namespace TPS2.Customer
                     new ParameterList {ParameterName = "@Required", Parameter = "1"}
                 };
 
-
-                _databaseConnection.RunStoredProc("InsertClientRequestSkills", skillParameters);
+                _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertClientRequestSkills, skillParameters);
             }
 
             var requestedItems = RequestedSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
@@ -100,8 +122,10 @@ namespace TPS2.Customer
                 };
 
 
-                _databaseConnection.RunStoredProc("InsertClientRequestSkills", skillParameters);
+                _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertClientRequestSkills, skillParameters);
             }
+
+            Response.Redirect("/Customer/NewRequestForm?m=AddRequestSuccess");
         }
     }
 }

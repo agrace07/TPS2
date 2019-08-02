@@ -13,6 +13,15 @@ namespace TPS2.Customer {
     public partial class NewRequestForm {
         
         /// <summary>
+        /// successMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder successMessage;
+        
+        /// <summary>
         /// RequiredSkillListBox control.
         /// </summary>
         /// <remarks>

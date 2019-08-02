@@ -76,13 +76,13 @@ namespace TPS2.Account
                     // Strip the query string from action
                     Form.Action = ResolveUrl("~/Account/Manage");
 
-                    //TODO Add message for successful update of data
                     SuccessMessage =
                         message == "ChangePwdSuccess" ? "Your password has been changed."
                         : message == "SetPwdSuccess" ? "Your password has been set."
                         : message == "RemoveLoginSuccess" ? "The account was removed."
                         : message == "AddPhoneNumberSuccess" ? "Phone number has been added"
                         : message == "RemovePhoneNumberSuccess" ? "Phone number was removed"
+                        : message == "UpdateInfoSuccess" ? "Your information has been updated"
                         : String.Empty;
                     successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
                 }
@@ -186,8 +186,11 @@ namespace TPS2.Account
 
             //TODO needs to know when to update and when to insert...
             //var spName = dataExists ? "UpdateEmployeeInfo" : "InsertEmployeeInfo";
-            var spName = "InsertEmployeeInfo";
-            _databaseConnection.RunStoredProc(spName, parameters);
+            //var spName = "InsertEmployeeInfo";
+            _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertEmployeeInfo, parameters);
+            
+            Response.Redirect("/Account/Manage?m=UpdateInfoSuccess");
+
             //dataExists = true;
 
             //if (_databaseConnection.RunStoredProc(spName, parameters))

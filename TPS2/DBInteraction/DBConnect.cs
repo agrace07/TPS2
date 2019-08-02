@@ -10,18 +10,38 @@ using TPS2.Models;
 
 namespace TPS2.DBInteraction
 {
+    public class ParameterList
+    {
+        public string ParameterName;
+        public string Parameter;
+    }
+
+    public class Skill
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class DBConnect
     {
-        //TODO delete this
-        private string test = "select * from AspNetUsers";
-
+        /// <summary>
+        /// Any new Stored procs need to be added here so they can be called from the function
+        /// </summary>
+        public enum StoredProcs
+        {
+            InsertClientRequest,
+            InsertClientRequestSkills,
+            InsertEmployeeInfo,
+            UpdateEmployeeInfo
+        };
+        
         //TODO Update to return list/accept query to run
-        public bool RunSelectQuery()//(string query)
+        public bool RunSelectQuery(string query)
         {
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand(test, con);
+                var cmd = new SqlCommand(query, con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 try
@@ -45,14 +65,20 @@ namespace TPS2.DBInteraction
             return true;
         }
         
-        public int RunStoredProc(string spName, List<ParameterList> parameters)
+        /// <summary>
+        /// Runs a stored proc from the database
+        /// </summary>
+        /// <param name="spName">Name of the stored proc to run</param>
+        /// <param name="parameters">a list of parameters to be passed to the stored proc</param>
+        /// <returns></returns>
+        public int RunStoredProc(StoredProcs spName, List<ParameterList> parameters)
         {
             int returnValue = 0;
 
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand(spName, con)
+                var cmd = new SqlCommand(spName.ToString(), con)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -71,14 +97,22 @@ namespace TPS2.DBInteraction
             return returnValue;
         }
 
-        public int RunStoredProcReturnId(string spName, List<ParameterList> parameters)
+        /// <summary>
+        /// Runs a stored proc from the database and returns an ID of the record that was inserted
+        /// This will add a @ReturnVal to the parameter list. Your stored proc needs to include this
+        /// value as well
+        /// </summary>
+        /// <param name="spName">Name of the stored proc to run</param>
+        /// <param name="parameters">a list of parameters to be passed to the stored proc</param>
+        /// <returns>ID of the inserted record</returns>
+        public int RunStoredProcReturnId(StoredProcs spName, List<ParameterList> parameters)
         {
             int returnValue = 0;
 
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand(spName, con)
+                var cmd = new SqlCommand(spName.ToString(), con)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -92,7 +126,7 @@ namespace TPS2.DBInteraction
                 param.Direction = ParameterDirection.Output;
 
                 cmd.Connection.Open();
-                returnValue = cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
                 
                 var result = param.Value;
                 returnValue = (int) result;
@@ -101,7 +135,7 @@ namespace TPS2.DBInteraction
 
             return returnValue;
         }
-
+        
         //TODO Employee stuff:
         //TODO Finish the Insert new info for employee
         //-Edit/update info
@@ -123,7 +157,11 @@ namespace TPS2.DBInteraction
             return states;
         }
 
-        //-get existing info(if available)
+        /// <summary>
+        /// Fills the user data in the Manage screen
+        /// </summary>
+        /// <param name="aspNetUserId">current user's ID</param>
+        /// <returns>All employee data</returns>
         public EmployeeModel GetEmployeeModel(string aspNetUserId)
         {
             var employee = new EmployeeModel();
@@ -170,9 +208,10 @@ namespace TPS2.DBInteraction
             return employee;
         }
 
-
-        //TODO CustomerModel:
-        //Get available skills from DB
+        /// <summary>
+        /// Get available skills from DB
+        /// </summary>
+        /// <returns>Skill list</returns>
         public List<Skill> GetSkillList()
         {
             var skillList = new List<Skill>();
@@ -210,17 +249,5 @@ namespace TPS2.DBInteraction
         //-View existing requests
         //-Delete existing requests(use flag in DB, don't delete)
         //-Edit existing
-    }
-
-    public class Skill
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class ParameterList
-    {
-        public string ParameterName;
-        public string Parameter;
     }
 }
