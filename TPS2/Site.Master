@@ -47,7 +47,7 @@
                     </button>
                     <a class="navbar-brand" runat="server" href="~/">Application name</a>
                 </div>
-                <div class="navbar-header">
+                <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/">Home</a></li>
                         <li><a runat="server" href="~/About">About</a></li>
@@ -62,7 +62,11 @@
                         </AnonymousTemplate>
                         <LoggedInTemplate>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Manage.aspx" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %> !</a></li>
+                                <li></li>
+                                <%--<li><a runat="server" href="~/Account/Manage.aspx" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %> !</a></li>--%>
+                                <li><a runat="server" href="~/Customer/CustomerDashboard.aspx" title="Customer Dashboard">Customer Dashboard</a></li>
+                                <li><a runat="server" href="~/Manager/ManagerDashboard.aspx" title="Manager Dashboard">Manager Dashboard</a></li>
+                                <li><a runat="server" href="~/Account/Manage.aspx" title="Manage your account">Manage Account</a></li>
                                 <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" />
                                 </li>

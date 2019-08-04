@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
+using Microsoft.AspNet.Identity;
 using TPS2.DBInteraction;
 
 namespace TPS2.Customer
@@ -83,15 +84,18 @@ namespace TPS2.Customer
             //insert request and address
             var parameters = new List<ParameterList>
             {
-                new ParameterList {ParameterName = "@EducationLevel", Parameter = EducationLevel.SelectedIndex.ToString()},
-                new ParameterList {ParameterName = "@EducationRequired", Parameter = EducationRequired.Checked ? "1" : "0"},
+                new ParameterList
+                    {ParameterName = "@EducationLevel", Parameter = EducationLevel.SelectedIndex.ToString()},
+                new ParameterList
+                    {ParameterName = "@EducationRequired", Parameter = EducationRequired.Checked ? "1" : "0"},
                 new ParameterList {ParameterName = "@StartingSalary", Parameter = StartingSalary.Text},
                 new ParameterList {ParameterName = "@AddressLine1", Parameter = Address1TextBox.Text},
                 new ParameterList {ParameterName = "@AddressLine2", Parameter = Address2TextBox.Text},
                 new ParameterList {ParameterName = "@City", Parameter = CityTextBox.Text},
                 new ParameterList {ParameterName = "@Zip", Parameter = ZipTextBox.Text},
                 new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text},
-                new ParameterList {ParameterName = "@Telecommute", Parameter = TelecommuteCheckBox.Checked ? "1" : "0"}
+                new ParameterList {ParameterName = "@Telecommute", Parameter = TelecommuteCheckBox.Checked ? "1" : "0"},
+                new ParameterList {ParameterName = "@RequestorID", Parameter = User.Identity.GetUserId()}
             };
             var clientRequestId = _databaseConnection.RunStoredProcReturnId(DBConnect.StoredProcs.InsertClientRequest, parameters);
             

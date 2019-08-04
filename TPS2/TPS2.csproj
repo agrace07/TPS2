@@ -175,7 +175,9 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Customer\CustomerDashboard.aspx" />
     <Content Include="Customer\NewRequestForm.aspx" />
+    <Content Include="Customer\ViewRequests.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -193,6 +195,7 @@
     <None Include="Properties\PublishProfiles\TPS20190710071236 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\TPS220190724090336 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Manager\ManagerDashboard.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -357,6 +360,13 @@
     </Compile>
     <Compile Include="Customer\NewRequestForm.aspx.designer.cs">
       <DependentUpon>NewRequestForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\ViewRequests.aspx.cs">
+      <DependentUpon>ViewRequests.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\ViewRequests.aspx.designer.cs">
+      <DependentUpon>ViewRequests.aspx</DependentUpon>
     </Compile>
     <Compile Include="DBInteraction\DBConnect.cs" />
     <Compile Include="Default.aspx.cs">
