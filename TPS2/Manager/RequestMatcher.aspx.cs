@@ -22,7 +22,7 @@ namespace TPS2.Manager
                 ActiveRequests.DataBind();
 
                 People.DataSource = _databaseConnection.GetAllEmployees();
-                People.DataValueField = "Name";
+                People.DataValueField = "ID";
                 People.DataTextField = "Name";
                 People.DataBind();
             }
@@ -32,13 +32,31 @@ namespace TPS2.Manager
         {
             if (ActiveRequests.SelectedIndex > -1 && People.SelectedIndex > -1)
             {
-                Submit.Enabled = true;
+                if (People.GetSelectedIndices().Length == 3)
+                {
+                    Submit.Enabled = true;
+                }
             }
         }
 
+        //this needs to make sure we do a post back
         protected void Submit_OnClick(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var peopleList = new List<ParameterList>();
+
+            foreach (var item in People.Items.Cast<ListItem>().Where(item => item.Selected))
+            {
+                var requestMatch = new List<ParameterList>
+                { 
+                    //ID of the person
+                    new ParameterList {ParameterName = "@AspNetUserId", Parameter = item.Value},
+                    //ID of the request
+                    new ParameterList {ParameterName = "@RequestId", Parameter = ActiveRequests.SelectedItem.Value}
+                };
+
+                _databaseConnection.RunStoredProc(DBConnect.StoredProcs.MatchRequest, requestMatch);
+                //TODO Success message and refresh list of unfilled requests
+            }
         }
     }
 }

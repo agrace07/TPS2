@@ -37,12 +37,16 @@ namespace TPS2.DBInteraction
     public class Employee
     {
         public string Name { get; set; }
+        public string Id { get; set; }
 
-        public Employee(string fn, string ln)
+        public Employee(string fn, string ln, string id)
         {
             Name = fn + " " + ln;
+            Id = id;
         }
     }
+
+    //TODO Fix all the hardcoded methods/functions to use stored procs
 
     public class DBConnect
     {
@@ -54,8 +58,9 @@ namespace TPS2.DBInteraction
             InsertClientRequest,
             InsertClientRequestSkills,
             InsertEmployeeInfo,
-            UpdateEmployeeInfo
-        };
+            UpdateEmployeeInfo,
+            MatchRequest
+        }
         
         //TODO Update to return list/accept query to run
         public bool RunSelectQuery(string query)
@@ -101,11 +106,55 @@ namespace TPS2.DBInteraction
                 {
                     unfilledRequests.Add(new Request(reader["Id"].ToString(), reader["Email"].ToString()));
                 }
+                cmd.Connection.Close();
             }
 
             return unfilledRequests;
         }
-        
+
+        public List<int> GetFilledRequests(string userId)
+        {
+            var ids = new List<int>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand(
+                    "select id from clientrequest where requestorID = '" + userId +
+                    "' and Id in (SELECT RequestId from RequestMatch ) AND Complete = 0", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    ids.Add(Int32.Parse(reader["id"].ToString()));
+                }
+                cmd.Connection.Close();
+            }
+
+            return ids;
+        }
+
+        public List<Employee> GetCandidateList(string reqId)
+        {
+            var employees = new List<Employee>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                //TODO need to figure our how to tell which of the user's requests we're going to match the employee to
+                var cmd = new SqlCommand("select e.FirstName, e.LastName, e.AspNetUserId from Employee e join RequestMatch rm on e.AspNetUserId = rm.AspNetUserId where e.Expired is null and rm.RequestId = " + reqId, con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
+                }
+                cmd.Connection.Close();
+            }
+
+            return employees;
+        }
+
         public List<Employee> GetAllEmployees()
         {
             var employees = new List<Employee>();
@@ -113,16 +162,31 @@ namespace TPS2.DBInteraction
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand("select FirstName, LastName from Employee where Expired IS NULL", con);
+                var cmd = new SqlCommand("select FirstName, LastName, AspNetUserId from Employee where Expired IS NULL", con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString()));
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
                 }
+                cmd.Connection.Close();
             }
 
             return employees;
+        }
+
+        public void SelectEmployee(string selectedId, string reqId)
+        {
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("UPDATE RequestMatch set WasSelected = 1 WHERE RequestId = " + reqId + " AND AspNetUserId = '" + selectedId + "'" , con);
+                cmd.Connection.Open();
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "UPDATE ClientRequest SET Complete = 1 WHERE Id = " + reqId;
+                cmd.ExecuteNonQuery();
+                cmd.Connection.Close();
+            }
         }
 
         /// <summary>
@@ -133,7 +197,7 @@ namespace TPS2.DBInteraction
         /// <returns></returns>
         public int RunStoredProc(StoredProcs spName, List<ParameterList> parameters)
         {
-            int returnValue = 0;
+            int returnValue;
 
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))

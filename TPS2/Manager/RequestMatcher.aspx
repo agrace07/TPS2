@@ -4,7 +4,7 @@
 
     <div>
         <asp:ListBox runat="server" ID="ActiveRequests" OnSelectedIndexChanged="EnableSubmit" AutoPostBack="True"/>
-        <asp:ListBox runat="server" ID="People" OnSelectedIndexChanged="EnableSubmit" AutoPostBack="True"/>
+        <asp:ListBox runat="server" ID="People" OnSelectedIndexChanged="EnableSubmit" AutoPostBack="True" SelectionMode="Multiple"/>
     </div>
     <div>
         <asp:Button runat="server" ID="Submit" Text="Submit" OnClick="Submit_OnClick" Enabled="False"/>
