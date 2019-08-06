@@ -187,7 +187,7 @@ namespace TPS2.Account
             //TODO needs to know when to update and when to insert...
             //var spName = dataExists ? "UpdateEmployeeInfo" : "InsertEmployeeInfo";
             //var spName = "InsertEmployeeInfo";
-            _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertEmployeeInfo, parameters);
+            _databaseConnection.RunStoredProc(DBConnect.StoredProcs.UpdateEmployeeInfo, parameters);
             
             Response.Redirect("/Account/Manage?m=UpdateInfoSuccess");
 

@@ -22,6 +22,28 @@ namespace TPS2.DBInteraction
         public string Name { get; set; }
     }
 
+    public class Request
+    {
+        public string Id { get; set; }
+        public string Email { get; set; }
+        
+        public Request(string v1, string v2)
+        {
+            Id = v1;
+            Email = v2;
+        }
+    }
+
+    public class Employee
+    {
+        public string Name { get; set; }
+
+        public Employee(string fn, string ln)
+        {
+            Name = fn + " " + ln;
+        }
+    }
+
     public class DBConnect
     {
         /// <summary>
@@ -64,7 +86,45 @@ namespace TPS2.DBInteraction
 
             return true;
         }
+
+        public List<Request> GetUnfilledRequests()
+        {
+            var unfilledRequests = new List<Request>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select cr.Id, anu.Email from clientRequest cr join AspNetUsers anu on cr.RequestorID = anu.Id where cr.Id NOT IN(select RequestID from RequestMatch)", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    unfilledRequests.Add(new Request(reader["Id"].ToString(), reader["Email"].ToString()));
+                }
+            }
+
+            return unfilledRequests;
+        }
         
+        public List<Employee> GetAllEmployees()
+        {
+            var employees = new List<Employee>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select FirstName, LastName from Employee where Expired IS NULL", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString()));
+                }
+            }
+
+            return employees;
+        }
+
         /// <summary>
         /// Runs a stored proc from the database
         /// </summary>
@@ -245,7 +305,6 @@ namespace TPS2.DBInteraction
             return skillList;
         }
 
-        //-Add new request
         //-View existing requests
         //-Delete existing requests(use flag in DB, don't delete)
         //-Edit existing

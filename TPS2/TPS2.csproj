@@ -197,6 +197,7 @@
     <None Include="Properties\PublishProfiles\TPS220190724090336 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Manager\ManagerDashboard.aspx" />
+    <Content Include="Manager\RequestMatcher.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -379,6 +380,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\RequestMatcher.aspx.cs">
+      <DependentUpon>RequestMatcher.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\RequestMatcher.aspx.designer.cs">
+      <DependentUpon>RequestMatcher.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />

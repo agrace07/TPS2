@@ -5,8 +5,7 @@
 
     <div>
         <ul>
-            <li><a runat="server" href="NewRequestForm.aspx" title="New Staffing Request">Create a New Request</a></li>
-            <li><a runat="server" href="ViewRequests.aspx" title="View Staffing Requests">View Existing Requests</a></li>
+            <li><a runat="server" href="RequestMatcher.aspx" title="Match Requests">Match Requests</a></li>
         </ul>
     </div>
 </asp:Content>
