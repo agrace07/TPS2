@@ -20,7 +20,7 @@ namespace TPS2.Account
         private EmployeeModel employee;
         //private bool dataExists = true;
 
-        public List<State> StateList = new List<State>();
+        public List<StateType> StateList = new List<StateType>();
 
         protected string SuccessMessage
         {
@@ -96,11 +96,8 @@ namespace TPS2.Account
                 employee = _databaseConnection.GetEmployeeModel(User.Identity.GetUserId());
                 if (employee.FirstName == null)
                 {
-                    //dataExists = false;
                     return;
                 }
-                //dataExists = true;
-                //fill textboxes
                 FirstNameTextBox.Text = employee.FirstName;
                 LastNameTextBox.Text = employee.LastName;
                 RelocateCheckBox.Checked = employee.WillingToRelocate;
@@ -109,8 +106,7 @@ namespace TPS2.Account
                 Address1TextBox.Text = employee.Location.AddressLine1;
                 Address2TextBox.Text = employee.Location.AddressLine2;
                 CityTextBox.Text = employee.Location.City;
-                //TODO Add state stuff
-                //StatesListBox.SelectedIndex =
+                StatesListBox.SelectedIndex = StatesListBox.Items.IndexOf(StatesListBox.Items.FindByText(employee.Location.State.Name));
                 ZipTextBox.Text = employee.Location.Zip;
             }
         }
@@ -162,7 +158,6 @@ namespace TPS2.Account
 
         protected void SubmitBtn_Click(object sender, EventArgs e)
         {
-            //TODO Prevent inserting when there's already values
             //TODO Validate inputs 
             var parameters = new List<ParameterList>
             {
@@ -183,20 +178,9 @@ namespace TPS2.Account
                 new ParameterList {ParameterName = "@Zip", Parameter = ZipTextBox.Text},
                 new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text}
             };
-
-            //TODO needs to know when to update and when to insert...
-            //var spName = dataExists ? "UpdateEmployeeInfo" : "InsertEmployeeInfo";
-            //var spName = "InsertEmployeeInfo";
             _databaseConnection.RunStoredProc(DBConnect.StoredProcs.UpdateEmployeeInfo, parameters);
             
             Response.Redirect("/Account/Manage?m=UpdateInfoSuccess");
-
-            //dataExists = true;
-
-            //if (_databaseConnection.RunStoredProc(spName, parameters))
-            //    ScriptManager.RegisterStartupScript(this, GetType(), "Alert", "alert('Your information has been updated.');", true);
-            //else
-            //    ScriptManager.RegisterStartupScript(this, GetType(), "Alert", "alert('Something went wrong, please contact an admin');", true);}
         }
     }
 }

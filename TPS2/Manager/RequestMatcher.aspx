@@ -1,7 +1,11 @@
 ﻿<%@ Page Title="Match Requests" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RequestMatcher.aspx.cs" Inherits="TPS2.Manager.RequestMatcher" %>
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
     <h2><%: Title %></h2>
-
+    <div>
+        <asp:PlaceHolder runat="server" ID="successMessage" Visible="false" ViewStateMode="Disabled">
+            <p class="text-success"><%: SuccessMessage %></p>
+        </asp:PlaceHolder>
+    </div>
     <div>
         <asp:ListBox runat="server" ID="ActiveRequests" OnSelectedIndexChanged="EnableSubmit" AutoPostBack="True"/>
         <asp:ListBox runat="server" ID="People" OnSelectedIndexChanged="EnableSubmit" AutoPostBack="True" SelectionMode="Multiple"/>

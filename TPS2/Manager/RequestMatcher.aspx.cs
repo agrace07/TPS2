@@ -12,9 +12,30 @@ namespace TPS2.Manager
     {
         private readonly DBConnect _databaseConnection = new DBConnect();
 
+        protected string SuccessMessage
+        {
+            get;
+            private set;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            // Render success message
+            var message = Request.QueryString["m"];
+            if (message != null)
+            {
+                // Strip the query string from action
+                Form.Action = ResolveUrl("~/Manager/RequestMatcher");
+
+                SuccessMessage =
+                    message == "MatchSuccess" ? "Employee matched to request."
+                    //follow this format to add additional messages:
+                    //: message == "SetPwdSuccess" ? "Your password has been set."
+                    : String.Empty;
+                successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
+            }
+
+            if (!IsPostBack || message != null)
             {
                 ActiveRequests.DataSource = _databaseConnection.GetUnfilledRequests();
                 ActiveRequests.DataValueField = "ID";
@@ -55,7 +76,7 @@ namespace TPS2.Manager
                 };
 
                 _databaseConnection.RunStoredProc(DBConnect.StoredProcs.MatchRequest, requestMatch);
-                //TODO Success message and refresh list of unfilled requests
+                Response.Redirect("/Manager/RequestMatcher.aspx?m=MatchSuccess");
             }
         }
     }

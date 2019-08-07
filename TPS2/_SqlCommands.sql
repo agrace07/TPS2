@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[CD_State] (
+/*CREATE TABLE [dbo].[CD_State] (
     [Id]        INT          IDENTITY (1, 1) NOT NULL,
     [StateCd]   VARCHAR (2)  NOT NULL,
     [StateName] VARCHAR (50) NOT NULL
@@ -149,4 +149,4 @@ IF @RECORDS > 0
 	
 	INSERT INTO Employee (FirstName, LastName, AspNetUserId, AddressID, Relocate, AvailabilityDate, PhoneNumber)
 	values (@FirstName, @LastName, @AspNetUserId, SCOPE_IDENTITY(), @Relocate, @AvailabilityDate, @PhoneNumber)
-END
+END*/

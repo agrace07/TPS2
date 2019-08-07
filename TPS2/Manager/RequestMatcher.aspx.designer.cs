@@ -13,6 +13,15 @@ namespace TPS2.Manager {
     public partial class RequestMatcher {
         
         /// <summary>
+        /// successMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder successMessage;
+        
+        /// <summary>
         /// ActiveRequests control.
         /// </summary>
         /// <remarks>

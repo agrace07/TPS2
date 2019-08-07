@@ -141,7 +141,6 @@ namespace TPS2.DBInteraction
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                //TODO need to figure our how to tell which of the user's requests we're going to match the employee to
                 var cmd = new SqlCommand("select e.FirstName, e.LastName, e.AspNetUserId from Employee e join RequestMatch rm on e.AspNetUserId = rm.AspNetUserId where e.Expired is null and rm.RequestId = " + reqId, con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
@@ -260,13 +259,9 @@ namespace TPS2.DBInteraction
             return returnValue;
         }
         
-        //TODO Employee stuff:
-        //TODO Finish the Insert new info for employee
-        //-Edit/update info
-
-        public List<State> GetStates()
+        public List<StateType> GetStates()
         {
-            var states = new List<State>();
+            var states = new List<StateType>();
 
             using (var con = new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
@@ -275,7 +270,7 @@ namespace TPS2.DBInteraction
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    states.Add(new State(reader["StateName"].ToString(),reader["StateCd"].ToString()));
+                    states.Add(new StateType(reader["StateName"].ToString(),reader["StateCd"].ToString()));
                 }
             }
             return states;
@@ -289,13 +284,13 @@ namespace TPS2.DBInteraction
         public EmployeeModel GetEmployeeModel(string aspNetUserId)
         {
             var employee = new EmployeeModel();
-            //var employeeLocation = new Address();
             employee.Location = new Address();
 
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var sql = "SELECT *FROM employee e JOIN EmployeeAddress ea on e.AddressID = ea.Id WHERE AspNetUserID = '" + aspNetUserId + "' AND Expired IS NULL";
+                //TODO Clean up this query so we're only selecting values that we're using
+                var sql = "SELECT * FROM employee e JOIN EmployeeAddress ea on e.AddressID = ea.Id JOIN CD_State cs on ea.StateCD = cs.StateCD WHERE AspNetUserID = '" + aspNetUserId + "' AND Expired IS NULL";
                 var cmd = new SqlCommand(sql, con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
@@ -313,8 +308,7 @@ namespace TPS2.DBInteraction
                         employee.Location.AddressLine1 = reader["AddressLine1"].ToString();
                         employee.Location.AddressLine2 = reader["AddressLine2"].ToString();
                         employee.Location.City = reader["City"].ToString();
-                        //TODO get this working
-                        //employee.Location.State = reader["AddressLine2"].ToString();
+                        employee.Location.State = new StateType(reader["StateName"].ToString(), reader["StateCd"].ToString());
                         employee.Location.Zip = reader["Zip"].ToString();
                     }
                 }
