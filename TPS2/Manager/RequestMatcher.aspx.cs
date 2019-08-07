@@ -63,7 +63,7 @@ namespace TPS2.Manager
         //this needs to make sure we do a post back
         protected void Submit_OnClick(object sender, EventArgs e)
         {
-            var peopleList = new List<ParameterList>();
+            //var peopleList = new List<ParameterList>();
 
             foreach (var item in People.Items.Cast<ListItem>().Where(item => item.Selected))
             {

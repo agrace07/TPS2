@@ -13,6 +13,24 @@ namespace TPS2.Customer {
     public partial class SelectPerson {
         
         /// <summary>
+        /// successMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder successMessage;
+        
+        /// <summary>
+        /// candidatesAvailable control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl candidatesAvailable;
+        
+        /// <summary>
         /// FilledRequests control.
         /// </summary>
         /// <remarks>
@@ -20,6 +38,15 @@ namespace TPS2.Customer {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList FilledRequests;
+        
+        /// <summary>
+        /// noCandidates control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl noCandidates;
         
         /// <summary>
         /// SelectDiv control.

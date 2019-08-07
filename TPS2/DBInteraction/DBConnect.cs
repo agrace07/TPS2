@@ -46,6 +46,13 @@ namespace TPS2.DBInteraction
         }
     }
 
+    public class Roles
+    {
+        public bool Employee { get; set; }
+        public bool Customer { get; set; }
+        public bool Manager { get; set; }
+    }
+
     //TODO Fix all the hardcoded methods/functions to use stored procs
 
     public class DBConnect
@@ -61,7 +68,38 @@ namespace TPS2.DBInteraction
             UpdateEmployeeInfo,
             MatchRequest
         }
-        
+
+        public Roles GetUsersRoles(string id)
+        {
+            var roles = new Roles();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select RoleId from AspNetUserRoles where UserId ='" + id + "'", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    switch (reader["RoleId"])
+                    {
+                        case 1:
+                            roles.Employee = true;
+                            break;
+                        case 2:
+                            roles.Customer = true;
+                            break;
+                        case 3:
+                            roles.Manager = true;
+                            break;
+                    }
+                }
+                cmd.Connection.Close();
+            }
+
+            return roles;
+        }
+
         //TODO Update to return list/accept query to run
         public bool RunSelectQuery(string query)
         {

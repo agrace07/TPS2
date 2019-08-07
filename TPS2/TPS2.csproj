@@ -188,6 +188,7 @@
     <Content Include="Global.asax" />
     <Content Include="Account\Web.config" />
     <Content Include="Customer\Web.config" />
+    <Content Include="Manager\AssignPermissions.aspx" />
     <Content Include="Manager\Web.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -408,6 +409,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\AssignPermissions.aspx.cs">
+      <DependentUpon>AssignPermissions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\AssignPermissions.aspx.designer.cs">
+      <DependentUpon>AssignPermissions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Manager\RequestMatcher.aspx.cs">
       <DependentUpon>RequestMatcher.aspx</DependentUpon>
