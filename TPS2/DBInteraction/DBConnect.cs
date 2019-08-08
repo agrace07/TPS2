@@ -69,6 +69,35 @@ namespace TPS2.DBInteraction
             MatchRequest
         }
 
+        public void UpdateUserRoles(string id, Roles roles)
+        {
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("DELETE FROM AspNetUserRoles WHERE UserId = '" + id + "'", con);
+                cmd.Connection.Open();
+                cmd.ExecuteNonQuery();
+                const string text = "INSERT INTO AspNetUserRoles (UserId, RoleId) VALUES ('";
+                if (roles.Employee)
+                {
+                    cmd.CommandText = text + id + "', '" + 1 + "')";
+                    cmd.ExecuteNonQuery();
+                }
+                if (roles.Customer)
+                {
+                    cmd.CommandText = text + id + "', '" + 2 + "')";
+                    cmd.ExecuteNonQuery();
+                }
+                if (roles.Manager)
+                {
+                    cmd.CommandText = text + id + "', '" + 3 + "')";
+                    cmd.ExecuteNonQuery();
+                }
+
+                cmd.Connection.Close();
+            }
+        }
+
         public Roles GetUsersRoles(string id)
         {
             var roles = new Roles();
@@ -83,13 +112,13 @@ namespace TPS2.DBInteraction
                 {
                     switch (reader["RoleId"])
                     {
-                        case 1:
+                        case "1":
                             roles.Employee = true;
                             break;
-                        case 2:
+                        case "2":
                             roles.Customer = true;
                             break;
-                        case 3:
+                        case "3":
                             roles.Manager = true;
                             break;
                     }

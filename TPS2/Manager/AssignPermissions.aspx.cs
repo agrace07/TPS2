@@ -11,12 +11,40 @@ namespace TPS2.Manager
     public partial class AssignPermissions : System.Web.UI.Page
     {
         private readonly DBConnect _databaseConnection = new DBConnect();
+        public Roles Roles { get; set; }
+
+        protected string SuccessMessage
+        {
+            get;
+            private set;
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)// || message != null)
+            // Render success message
+            var message = Request.QueryString["m"];
+            if (message != null)
             {
-                //TODO get list of all users
+                // Strip the query string from action
+                Form.Action = ResolveUrl("~/Manager/AssignPermissions");
+
+                SuccessMessage =
+                    message == "Success" ? "Permissions updated."
+                        //follow this format to add additional messages:
+                        //: message == "SetPwdSuccess" ? "Your password has been set."
+                        : String.Empty;
+                successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
+            }
+
+            if (Roles != null)
+            {
+                employeeChkBox.Checked = Roles.Employee;
+                customerChkBox.Checked = Roles.Customer;
+                managerChkBox.Checked = Roles.Manager;
+            }
+
+            if (!IsPostBack)
+            {
                 UserList.DataSource = _databaseConnection.GetAllEmployees();
                 UserList.DataValueField = "ID";
                 UserList.DataTextField = "Name";
@@ -26,22 +54,30 @@ namespace TPS2.Manager
 
         protected void Submit_OnClick(object sender, EventArgs e)
         {
-            //TODO update the DB with the check boxes
+            var newRoles = new Roles
+            {
+                Customer = customerChkBox.Checked,
+                Employee = employeeChkBox.Checked,
+                Manager = managerChkBox.Checked
+            };
+
+            _databaseConnection.UpdateUserRoles(UserList.SelectedValue, newRoles);
+            Response.Redirect("/Manager/AssignPermissions.aspx?m=Success");
         }
 
         protected void UserList_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            //TODO update the checkboxes to show the user's current roles
-            Roles roles = _databaseConnection.GetUsersRoles(UserList.SelectedValue);
-            
-            //if (roles == null)
-            //    return;
-            //if (roles.Customer)
-            //    customerChkBox.Checked = true;
-            //if (roles.Employee)
-            //    employeeChkBox.Checked = true;
-            //if (roles.Manager)
-            //    managerChkBox.Checked = true;
+            customerChkBox.Checked = employeeChkBox.Checked = managerChkBox.Checked = false;
+            Roles = _databaseConnection.GetUsersRoles(UserList.SelectedValue);
+
+            if (Roles == null)
+                return;
+            if (Roles.Customer)
+                customerChkBox.Checked = true;
+            if (Roles.Employee)
+                employeeChkBox.Checked = true;
+            if (Roles.Manager)
+                managerChkBox.Checked = true;
         }
     }
 }
