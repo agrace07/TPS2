@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Web;
+using System.Web.Providers.Entities;
 using System.Web.Security;
+using Microsoft.AspNet.Identity;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Microsoft.AspNet.Identity;
+using TPS2.DBInteraction;
 
 namespace TPS2
 {
@@ -15,6 +14,7 @@ namespace TPS2
         private const string AntiXsrfTokenKey = "__AntiXsrfToken";
         private const string AntiXsrfUserNameKey = "__AntiXsrfUserName";
         private string _antiXsrfTokenValue;
+        private DBConnect _dbConnect = new DBConnect();
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -69,7 +69,18 @@ namespace TPS2
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            //if (Context.User.IsInRole("Customer"))
+            //{
+            //    var customerMenuItem = FindControl("CustomerMenuItem");
+            //    if (customerMenuItem != null)
+            //        customerMenuItem.Visible = true;
+            //}
+            //if (Context.User.IsInRole("Manager"))
+            //{
+            //    var managerMenuItem = FindControl("ManagerMenuItem");
+            //    if (managerMenuItem != null)
+            //        managerMenuItem.Visible = true;
+            //}
         }
 
         protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)

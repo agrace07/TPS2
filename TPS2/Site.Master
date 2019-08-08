@@ -1,4 +1,5 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="TPS2.SiteMaster" %>
+<%@ Import Namespace="System.Web.Providers.Entities" %>
 
 <!DOCTYPE html>
 
@@ -63,9 +64,14 @@
                         <LoggedInTemplate>
                             <ul class="nav navbar-nav navbar-right">
                                 <li></li>
-                                <%--<li><a runat="server" href="~/Account/Manage.aspx" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %> !</a></li>--%>
-                                <li><a runat="server" href="~/Customer/CustomerDashboard.aspx" title="Customer Dashboard">Customer Dashboard</a></li>
-                                <li><a runat="server" href="~/Manager/ManagerDashboard.aspx" title="Manager Dashboard">Manager Dashboard</a></li>
+                                <% if (Context.User.IsInRole("Customer"))
+                                    { %>
+                                <li><a runat="server" ID="CustomerMenuItem" href="~/Customer/CustomerDashboard.aspx" title="Customer Dashboard">Customer Dashboard</a></li>
+                                <% } %>
+                                <% if (Context.User.IsInRole("Manager"))
+                                   { %>
+                                <li><a runat="server" ID="ManagerMenuItem" href="~/Manager/ManagerDashboard.aspx" title="Manager Dashboard">Manager Dashboard</a></li>
+                                <% } %>
                                 <li><a runat="server" href="~/Account/Manage.aspx" title="Manage your account">Manage Account</a></li>
                                 <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" />

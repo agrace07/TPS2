@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
+using Microsoft.Owin.Security;
 using TPS2.Models;
 
 namespace TPS2.DBInteraction
@@ -26,22 +27,28 @@ namespace TPS2.DBInteraction
     {
         public string Id { get; set; }
         public string Email { get; set; }
+        public string ReqDate { get; set; }
+        public string Display { get; set; }
         
-        public Request(string v1, string v2)
+        public Request(string v1, string v2, string v3)
         {
             Id = v1;
             Email = v2;
+            ReqDate = v3;
+            Display = Email + " " + ReqDate;
         }
     }
 
     public class Employee
     {
         public string Name { get; set; }
+        public string Email { get; set; }
         public string Id { get; set; }
 
-        public Employee(string fn, string ln, string id)
+        public Employee(string fn, string ln, string id, string e)
         {
             Name = fn + " " + ln;
+            Email = e;
             Id = id;
         }
     }
@@ -68,7 +75,7 @@ namespace TPS2.DBInteraction
             UpdateEmployeeInfo,
             MatchRequest
         }
-
+        
         public void UpdateUserRoles(string id, Roles roles)
         {
             using (var con =
@@ -186,12 +193,12 @@ namespace TPS2.DBInteraction
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand("select cr.Id, anu.Email from clientRequest cr join AspNetUsers anu on cr.RequestorID = anu.Id where cr.Id NOT IN(select RequestID from RequestMatch)", con);
+                var cmd = new SqlCommand("select cr.Id, anu.Email, cr.RequestDate from clientRequest cr join AspNetUsers anu on cr.RequestorID = anu.Id where cr.Id NOT IN(select RequestID from RequestMatch)", con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    unfilledRequests.Add(new Request(reader["Id"].ToString(), reader["Email"].ToString()));
+                    unfilledRequests.Add(new Request(reader["Id"].ToString(), reader["Email"].ToString(), reader["RequestDate"].ToString()));
                 }
                 cmd.Connection.Close();
             }
@@ -199,21 +206,22 @@ namespace TPS2.DBInteraction
             return unfilledRequests;
         }
 
-        public List<int> GetFilledRequests(string userId)
+        public List<Tuple<int,string>> GetFilledRequests(string userId)
         {
-            var ids = new List<int>();
+            var ids = new List<Tuple<int, string>>();
 
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
                 var cmd = new SqlCommand(
-                    "select id from clientrequest where requestorID = '" + userId +
+                    "select id, RequestDate from clientrequest where requestorID = '" + userId +
                     "' and Id in (SELECT RequestId from RequestMatch ) AND Complete = 0", con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    ids.Add(Int32.Parse(reader["id"].ToString()));
+                    //ids.Add(Int32.Parse(reader["id"].ToString()),reader["RequestDate"].ToString());
+                    ids.Add(new Tuple<int, string>(Int32.Parse(reader["id"].ToString()), reader["RequestDate"].ToString()));
                 }
                 cmd.Connection.Close();
             }
@@ -233,7 +241,7 @@ namespace TPS2.DBInteraction
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString(), reader["Email"].ToString()));
                 }
                 cmd.Connection.Close();
             }
@@ -248,12 +256,12 @@ namespace TPS2.DBInteraction
             using (var con =
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var cmd = new SqlCommand("select FirstName, LastName, AspNetUserId from Employee where Expired IS NULL", con);
+                var cmd = new SqlCommand("select FirstName, LastName, AspNetUserId, Email from Employee e JOIN AspNetUsers anu on e.AspNetUserId = anu.Id where Expired IS NULL", con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString(), reader["Email"].ToString()));
                 }
                 cmd.Connection.Close();
             }
@@ -273,7 +281,7 @@ namespace TPS2.DBInteraction
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString(), String.Empty));
                 }
                 cmd.Connection.Close();
             }

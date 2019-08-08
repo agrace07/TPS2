@@ -35,15 +35,18 @@ namespace TPS2.Customer
             if (!IsPostBack || message != null)
             {
 
-                var filledIds = new List<string>();
+                var filledIds = new List<Tuple<int, string>>();
                 foreach (var id in _databaseConnection.GetFilledRequests(User.Identity.GetUserId()))
                 {
-                    filledIds.Add(id.ToString());
+                    //filledIds.Add(id);
+                    filledIds.Add(new Tuple<int, string>(id.Item1, id.Item2));
                 }
 
                 if (filledIds.Count > 0)
                 {
                     FilledRequests.DataSource = filledIds;
+                    FilledRequests.DataValueField = "Item1";
+                    FilledRequests.DataTextField = "Item2";
                     FilledRequests.DataBind();
                 }
                 else

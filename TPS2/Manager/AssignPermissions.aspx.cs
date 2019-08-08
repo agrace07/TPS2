@@ -47,7 +47,7 @@ namespace TPS2.Manager
             {
                 UserList.DataSource = _databaseConnection.GetAllEmployees();
                 UserList.DataValueField = "ID";
-                UserList.DataTextField = "Name";
+                UserList.DataTextField = "Email";
                 UserList.DataBind();
             }
         }
