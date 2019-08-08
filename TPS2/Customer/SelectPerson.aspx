@@ -17,7 +17,9 @@
     </div>
     <div ID="SelectDiv" runat="server">
         <p>Possible Candidates:</p>
-        <asp:ListBox runat="server" ID="CandidateList"/>
+        <asp:ListBox runat="server" ID="CandidateList" OnSelectedIndexChanged="CandidateList_OnSelectedIndexChanged" AutoPostBack="True"/>
+        <p>Candidate skills:</p>
+        <asp:ListBox runat="server" ID="CandidateSkillList" SelectionMode="Multiple"/>
         <div>
             <asp:Button runat="server" ID="Submit" Text="Submit" OnClick="Submit_OnClick" Enabled="True"/>
         </div>

@@ -64,7 +64,7 @@ namespace TPS2.DBInteraction
         {
             InsertClientRequest,
             InsertClientRequestSkills,
-            InsertEmployeeInfo,
+            InsertEmployeeSkills,
             UpdateEmployeeInfo,
             MatchRequest
         }
@@ -127,6 +127,26 @@ namespace TPS2.DBInteraction
             }
 
             return roles;
+        }
+
+        public List<int> GetEmployeeSkills(string id)
+        {
+            var skillIds = new List<int>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select SkillId from EmployeeSkills where Id ='" + id + "'", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    skillIds.Add((int) reader["SkillId"]);
+                }
+                cmd.Connection.Close();
+            }
+
+            return skillIds;
         }
 
         //TODO Update to return list/accept query to run
@@ -229,6 +249,26 @@ namespace TPS2.DBInteraction
                 new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
                 var cmd = new SqlCommand("select FirstName, LastName, AspNetUserId from Employee where Expired IS NULL", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    employees.Add(new Employee(reader["FirstName"].ToString(), reader["LastName"].ToString(), reader["AspNetUserId"].ToString()));
+                }
+                cmd.Connection.Close();
+            }
+
+            return employees;
+        }
+
+        public List<Employee> GetQualifiedEmployees(string requestId)
+        {
+            var employees = new List<Employee>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select FirstName, LastName, AspNetUserId from Employee e JOIN EmployeeSkills es on e.AspNetUserId = es.Id where Expired IS NULL AND SkillId in (SELECT SkillId FROM RequestSkills WHERE RequestId = " + requestId + " AND[Required] = 1)", con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -361,33 +401,38 @@ namespace TPS2.DBInteraction
                 var cmd = new SqlCommand(sql, con);
                 cmd.Connection.Open();
                 var reader = cmd.ExecuteReader();
-                try
+
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        employee.FirstName = reader["FirstName"].ToString();
-                        employee.LastName = reader["LastName"].ToString();
-                        employee.WillingToRelocate = reader["Relocate"].ToString() != "0";
-                        employee.ResumeLocation = reader["ResumeLocation"].ToString();
-                        employee.Picture = reader["PictureLocation"].ToString();
-                        employee.AvailabilityDate = Convert.ToDateTime(reader["AvailabilityDate"]);
-                        employee.PhoneNumber = reader["PhoneNumber"].ToString();
-                        employee.Location.AddressLine1 = reader["AddressLine1"].ToString();
-                        employee.Location.AddressLine2 = reader["AddressLine2"].ToString();
-                        employee.Location.City = reader["City"].ToString();
-                        employee.Location.State = new StateType(reader["StateName"].ToString(), reader["StateCd"].ToString());
-                        employee.Location.Zip = reader["Zip"].ToString();
-                    }
+                    employee.FirstName = reader["FirstName"].ToString();
+                    employee.LastName = reader["LastName"].ToString();
+                    employee.WillingToRelocate = reader["Relocate"].ToString() != "0";
+                    employee.ResumeLocation = reader["ResumeLocation"].ToString();
+                    employee.Picture = reader["PictureLocation"].ToString();
+                    employee.AvailabilityDate = Convert.ToDateTime(reader["AvailabilityDate"]);
+                    employee.PhoneNumber = reader["PhoneNumber"].ToString();
+                    employee.Location.AddressLine1 = reader["AddressLine1"].ToString();
+                    employee.Location.AddressLine2 = reader["AddressLine2"].ToString();
+                    employee.Location.City = reader["City"].ToString();
+                    employee.Location.State = new StateType(reader["StateName"].ToString(), reader["StateCd"].ToString());
+                    employee.Location.Zip = reader["Zip"].ToString();
                 }
-                catch (Exception e)
+
+                cmd.Connection.Close();
+
+                cmd.Connection.Open();
+                sql = "select s.Id, s.Name from EmployeeSkills es JOIN Skills s on es.SkillId = s.Id where es.Id = '" + aspNetUserId + "'";
+                cmd.CommandText = sql;
+                reader = cmd.ExecuteReader();
+
+                employee.WorkExperience = new List<Experience>();
+
+                while (reader.Read())
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    employee.WorkExperience.Add(new Experience {ExperienceId = (int) reader["Id"], Description = reader["Name"].ToString()});
                 }
-                finally
-                {
-                    cmd.Connection.Close();
-                }
+
+                cmd.Connection.Close();
             }
 
             return employee;

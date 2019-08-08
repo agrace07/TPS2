@@ -51,10 +51,12 @@
                     <asp:CheckBox runat="server" ID="RelocateCheckBox"/>
                     <dt>Availability Date</dt>
                     <asp:Calendar runat="server" ID="AvailabilityDateCalendar"></asp:Calendar>
+                    <dt>Skills</dt>
+                    <asp:ListBox runat="server" ID="SkillListBox" SelectionMode="Multiple"/>
                     
-                    <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>
                 </dl>
                 
+                <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>
             </div>
         </div>
     </div>

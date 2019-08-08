@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -58,6 +59,12 @@ namespace TPS2.Account
 
             if (!IsPostBack)
             {
+                //Get the skills from the DB
+                SkillListBox.DataSource = _databaseConnection.GetSkillList();
+                SkillListBox.DataValueField = "Id";
+                SkillListBox.DataTextField = "Name";
+                SkillListBox.DataBind();
+
                 // Determine the sections to render
                 if (HasPassword(manager))
                 {
@@ -92,7 +99,6 @@ namespace TPS2.Account
                 StatesListBox.DataTextField = "Name";
                 StatesListBox.DataBind();
 
-
                 employee = _databaseConnection.GetEmployeeModel(User.Identity.GetUserId());
                 if (employee.FirstName == null)
                 {
@@ -108,6 +114,9 @@ namespace TPS2.Account
                 CityTextBox.Text = employee.Location.City;
                 StatesListBox.SelectedIndex = StatesListBox.Items.IndexOf(StatesListBox.Items.FindByText(employee.Location.State.Name));
                 ZipTextBox.Text = employee.Location.Zip;
+
+                foreach (Experience skill in employee.WorkExperience)
+                    SkillListBox.Items.FindByValue(skill.ExperienceId.ToString()).Selected = true;
             }
         }
 
@@ -179,7 +188,19 @@ namespace TPS2.Account
                 new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text}
             };
             _databaseConnection.RunStoredProc(DBConnect.StoredProcs.UpdateEmployeeInfo, parameters);
-            
+
+            var requiredItems = SkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
+            foreach (var item in requiredItems)
+            {
+                var skillParameters = new List<ParameterList>
+                {
+                    new ParameterList {ParameterName = "@Id", Parameter = User.Identity.GetUserId()},
+                    new ParameterList {ParameterName = "@SkillId", Parameter = item.Value}
+                };
+
+                _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertEmployeeSkills, skillParameters);
+            }
+
             Response.Redirect("/Account/Manage?m=UpdateInfoSuccess");
         }
     }

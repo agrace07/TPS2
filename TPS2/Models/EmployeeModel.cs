@@ -30,7 +30,6 @@ namespace TPS2.Models
     {
         public int ExperienceId { get; set; }
         public string Description { get; set; }
-        public int Months { get; set; }
     }
 
     public class EmployeeModel

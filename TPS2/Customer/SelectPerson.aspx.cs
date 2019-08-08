@@ -51,6 +51,11 @@ namespace TPS2.Customer
                     candidatesAvailable.Visible = false;
                     noCandidates.Visible = true;
                 }
+
+                CandidateSkillList.DataSource = _databaseConnection.GetSkillList();
+                CandidateSkillList.DataValueField = "Id";
+                CandidateSkillList.DataTextField = "Name";
+                CandidateSkillList.DataBind();
             }
         }
 
@@ -68,7 +73,19 @@ namespace TPS2.Customer
         protected void Submit_OnClick(object sender, EventArgs e)
         {
             _databaseConnection.SelectEmployee(CandidateList.SelectedValue, FilledRequests.SelectedValue);
+            SelectDiv.Visible = false;
             Response.Redirect("/Customer/SelectPerson?m=SelectSuccess");
+        }
+
+        protected void CandidateList_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectDiv.Visible = true;
+
+            CandidateSkillList.ClearSelection();
+
+            var skillList = _databaseConnection.GetEmployeeSkills(CandidateList.SelectedValue);
+            foreach (var id in skillList)
+                CandidateSkillList.Items.FindByValue(id.ToString()).Selected = true;
         }
     }
 }

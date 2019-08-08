@@ -42,17 +42,47 @@ namespace TPS2.Manager
                 ActiveRequests.DataTextField = "Email";
                 ActiveRequests.DataBind();
 
-                People.DataSource = _databaseConnection.GetAllEmployees();
-                People.DataValueField = "ID";
-                People.DataTextField = "Name";
-                People.DataBind();
+                //TODO get QUALIFIED employees, look at skills in the DB
+                //People.DataSource = _databaseConnection.GetAllEmployees();
+                //People.DataSource = _databaseConnection.GetQualifiedEmployees();
+                //People.DataValueField = "ID";
+                //People.DataTextField = "Name";
+                //People.DataBind();
+
+                //PersonSkills.DataSource = _databaseConnection.GetSkillList();
+                //PersonSkills.DataValueField = "Id";
+                //PersonSkills.DataTextField = "Name";
+                //PersonSkills.DataBind();
             }
         }
 
         protected void EnableSubmit(object sender, EventArgs e)
         {
-            if (ActiveRequests.SelectedIndex > -1 && People.SelectedIndex > -1)
+            //PersonSkills.ClearSelection();
+
+            //var emp = _databaseConnection.GetEmployeeModel(People.SelectedValue);
+
+            //foreach (var skill in emp.WorkExperience)
+            //    PersonSkills.Items.FindByText(skill.Description).Selected = true;
+
+            if (ActiveRequests.SelectedIndex > -1)
             {
+                People.DataSource = _databaseConnection.GetQualifiedEmployees(ActiveRequests.SelectedValue);
+                People.DataValueField = "ID";
+                People.DataTextField = "Name";
+                People.DataBind();
+
+                if (People.Items.Count > 0)
+                {
+                    People.Visible = true;
+                    NoQualified.Visible = false;
+                }
+                else
+                {
+                    People.Visible = false;
+                    NoQualified.Visible = true;
+                }
+
                 if (People.GetSelectedIndices().Length == 3)
                 {
                     Submit.Enabled = true;
@@ -76,8 +106,11 @@ namespace TPS2.Manager
                 };
 
                 _databaseConnection.RunStoredProc(DBConnect.StoredProcs.MatchRequest, requestMatch);
-                Response.Redirect("/Manager/RequestMatcher.aspx?m=MatchSuccess");
+
+                People.Visible = false;
+                NoQualified.Visible = false;
             }
+            Response.Redirect("/Manager/RequestMatcher.aspx?m=MatchSuccess");
         }
     }
 }
