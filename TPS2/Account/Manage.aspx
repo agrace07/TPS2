@@ -53,7 +53,12 @@
                     <asp:Calendar runat="server" ID="AvailabilityDateCalendar"></asp:Calendar>
                     <dt>Skills</dt>
                     <asp:ListBox runat="server" ID="SkillListBox" SelectionMode="Multiple"/>
-                    
+                    <dt>Upload Resume</dt>
+                    <asp:FileUpload runat="server" ID="resumeUpload" AllowMultiple="False"/>
+                    <asp:TextBox runat="server" ID="ResumeName" Visible="False" ReadOnly="True"></asp:TextBox>
+                    <dt>Upload Picture</dt>
+                    <asp:FileUpload runat="server" ID="pictureUpload" AllowMultiple="False"/>
+                    <asp:TextBox runat="server" ID="PictureName" Visible="False" ReadOnly="True"></asp:TextBox>
                 </dl>
                 
                 <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>

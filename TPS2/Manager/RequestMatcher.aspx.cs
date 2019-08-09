@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using TPS2.DBInteraction;
+using Parameter = TPS2.DBInteraction.Parameter;
 
 namespace TPS2.Manager
 {
@@ -77,12 +78,12 @@ namespace TPS2.Manager
         {
             foreach (var item in People.Items.Cast<ListItem>().Where(item => item.Selected))
             {
-                var requestMatch = new List<ParameterList>
+                var requestMatch = new List<Parameter>
                 { 
                     //ID of the person
-                    new ParameterList {ParameterName = "@AspNetUserId", Parameter = item.Value},
+                    new Parameter {ParameterName = "@AspNetUserId", ParameterValue = item.Value},
                     //ID of the request
-                    new ParameterList {ParameterName = "@RequestId", Parameter = ActiveRequests.SelectedItem.Value}
+                    new Parameter {ParameterName = "@RequestId", ParameterValue = ActiveRequests.SelectedItem.Value}
                 };
 
                 _databaseConnection.RunStoredProc(DBConnect.StoredProcs.MatchRequest, requestMatch);

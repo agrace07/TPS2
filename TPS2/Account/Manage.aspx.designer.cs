@@ -139,6 +139,42 @@ namespace TPS2.Account {
         protected global::System.Web.UI.WebControls.ListBox SkillListBox;
         
         /// <summary>
+        /// resumeUpload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload resumeUpload;
+        
+        /// <summary>
+        /// ResumeName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox ResumeName;
+        
+        /// <summary>
+        /// pictureUpload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload pictureUpload;
+        
+        /// <summary>
+        /// PictureName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox PictureName;
+        
+        /// <summary>
         /// SubmitBtn control.
         /// </summary>
         /// <remarks>

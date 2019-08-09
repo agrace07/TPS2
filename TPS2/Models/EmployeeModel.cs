@@ -42,8 +42,8 @@ namespace TPS2.Models
         public Address Location { get; set; }
         public bool WillingToRelocate { get; set; }
         public List<Experience> WorkExperience { get; set; }
-        public string ResumeLocation { get; set; } //TODO will point to a location on the server where the resume is stored.  
-        public string Picture { get; set; } //TODO same as resume
+        public string ResumeLocation { get; set; } 
+        public string PictureLocation { get; set; }
         public DateTime AvailabilityDate { get; set; }
     }
 }

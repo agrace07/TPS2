@@ -11,10 +11,10 @@ using TPS2.Models;
 
 namespace TPS2.DBInteraction
 {
-    public class ParameterList
+    public class Parameter
     {
         public string ParameterName;
-        public string Parameter;
+        public string ParameterValue;
     }
 
     public class Skill
@@ -73,7 +73,8 @@ namespace TPS2.DBInteraction
             InsertClientRequestSkills,
             InsertEmployeeSkills,
             UpdateEmployeeInfo,
-            MatchRequest
+            MatchRequest,
+            ClearSkills
         }
         
         public void UpdateUserRoles(string id, Roles roles)
@@ -309,7 +310,7 @@ namespace TPS2.DBInteraction
         /// <param name="spName">Name of the stored proc to run</param>
         /// <param name="parameters">a list of parameters to be passed to the stored proc</param>
         /// <returns></returns>
-        public int RunStoredProc(StoredProcs spName, List<ParameterList> parameters)
+        public int RunStoredProc(StoredProcs spName, List<Parameter> parameters)
         {
             int returnValue;
 
@@ -323,7 +324,7 @@ namespace TPS2.DBInteraction
 
                 foreach (var parameter in parameters)
                 {
-                    cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.Parameter);
+                    cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.ParameterValue);
                 }
                 
                 cmd.Connection.Open();
@@ -343,7 +344,7 @@ namespace TPS2.DBInteraction
         /// <param name="spName">Name of the stored proc to run</param>
         /// <param name="parameters">a list of parameters to be passed to the stored proc</param>
         /// <returns>ID of the inserted record</returns>
-        public int RunStoredProcReturnId(StoredProcs spName, List<ParameterList> parameters)
+        public int RunStoredProcReturnId(StoredProcs spName, List<Parameter> parameters)
         {
             int returnValue = 0;
 
@@ -357,7 +358,7 @@ namespace TPS2.DBInteraction
 
                 foreach (var parameter in parameters)
                 {
-                    cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.Parameter);
+                    cmd.Parameters.AddWithValue(parameter.ParameterName, parameter.ParameterValue);
                 }
 
                 var param = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
@@ -416,7 +417,7 @@ namespace TPS2.DBInteraction
                     employee.LastName = reader["LastName"].ToString();
                     employee.WillingToRelocate = reader["Relocate"].ToString() != "0";
                     employee.ResumeLocation = reader["ResumeLocation"].ToString();
-                    employee.Picture = reader["PictureLocation"].ToString();
+                    employee.PictureLocation = reader["PictureLocation"].ToString();
                     employee.AvailabilityDate = Convert.ToDateTime(reader["AvailabilityDate"]);
                     employee.PhoneNumber = reader["PhoneNumber"].ToString();
                     employee.Location.AddressLine1 = reader["AddressLine1"].ToString();
@@ -424,6 +425,8 @@ namespace TPS2.DBInteraction
                     employee.Location.City = reader["City"].ToString();
                     employee.Location.State = new StateType(reader["StateName"].ToString(), reader["StateCd"].ToString());
                     employee.Location.Zip = reader["Zip"].ToString();
+                    employee.ResumeLocation = reader["ResumeLocation"].ToString();
+                    employee.PictureLocation = reader["PictureLocation"].ToString();
                 }
 
                 cmd.Connection.Close();

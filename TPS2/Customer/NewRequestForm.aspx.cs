@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 using TPS2.DBInteraction;
+using Parameter = TPS2.DBInteraction.Parameter;
 
 namespace TPS2.Customer
 {
@@ -82,20 +83,20 @@ namespace TPS2.Customer
         protected void SubmitBtn_Click(object sender, EventArgs e)
         {
             //insert request and address
-            var parameters = new List<ParameterList>
+            var parameters = new List<Parameter>
             {
-                new ParameterList
-                    {ParameterName = "@EducationLevel", Parameter = EducationLevel.SelectedIndex.ToString()},
-                new ParameterList
-                    {ParameterName = "@EducationRequired", Parameter = EducationRequired.Checked ? "1" : "0"},
-                new ParameterList {ParameterName = "@StartingSalary", Parameter = StartingSalary.Text},
-                new ParameterList {ParameterName = "@AddressLine1", Parameter = Address1TextBox.Text},
-                new ParameterList {ParameterName = "@AddressLine2", Parameter = Address2TextBox.Text},
-                new ParameterList {ParameterName = "@City", Parameter = CityTextBox.Text},
-                new ParameterList {ParameterName = "@Zip", Parameter = ZipTextBox.Text},
-                new ParameterList {ParameterName = "@State", Parameter = StatesListBox.Text},
-                new ParameterList {ParameterName = "@Telecommute", Parameter = TelecommuteCheckBox.Checked ? "1" : "0"},
-                new ParameterList {ParameterName = "@RequestorID", Parameter = User.Identity.GetUserId()}
+                new Parameter
+                    {ParameterName = "@EducationLevel", ParameterValue = EducationLevel.SelectedIndex.ToString()},
+                new Parameter
+                    {ParameterName = "@EducationRequired", ParameterValue = EducationRequired.Checked ? "1" : "0"},
+                new Parameter {ParameterName = "@StartingSalary", ParameterValue = StartingSalary.Text},
+                new Parameter {ParameterName = "@AddressLine1", ParameterValue = Address1TextBox.Text},
+                new Parameter {ParameterName = "@AddressLine2", ParameterValue = Address2TextBox.Text},
+                new Parameter {ParameterName = "@City", ParameterValue = CityTextBox.Text},
+                new Parameter {ParameterName = "@Zip", ParameterValue = ZipTextBox.Text},
+                new Parameter {ParameterName = "@State", ParameterValue = StatesListBox.Text},
+                new Parameter {ParameterName = "@Telecommute", ParameterValue = TelecommuteCheckBox.Checked ? "1" : "0"},
+                new Parameter {ParameterName = "@RequestorID", ParameterValue = User.Identity.GetUserId()}
             };
             var clientRequestId = _databaseConnection.RunStoredProcReturnId(DBConnect.StoredProcs.InsertClientRequest, parameters);
             
@@ -105,11 +106,11 @@ namespace TPS2.Customer
             var requiredItems = RequiredSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
             foreach (var item in requiredItems)
             {
-                var skillParameters = new List<ParameterList>
+                var skillParameters = new List<Parameter>
                 {
-                    new ParameterList {ParameterName = "@RequestId", Parameter = clientRequestId.ToString()},
-                    new ParameterList {ParameterName = "@SkillId", Parameter = item.Value},
-                    new ParameterList {ParameterName = "@Required", Parameter = "1"}
+                    new Parameter {ParameterName = "@RequestId", ParameterValue = clientRequestId.ToString()},
+                    new Parameter {ParameterName = "@SkillId", ParameterValue = item.Value},
+                    new Parameter {ParameterName = "@Required", ParameterValue = "1"}
                 };
 
                 _databaseConnection.RunStoredProc(DBConnect.StoredProcs.InsertClientRequestSkills, skillParameters);
@@ -118,11 +119,11 @@ namespace TPS2.Customer
             var requestedItems = RequestedSkillListBox.Items.Cast<ListItem>().Where(item => item.Selected);
             foreach (var item in requestedItems)
             {
-                var skillParameters = new List<ParameterList>
+                var skillParameters = new List<Parameter>
                 {
-                    new ParameterList {ParameterName = "@RequestId", Parameter = clientRequestId.ToString()},
-                    new ParameterList {ParameterName = "@SkillId", Parameter = item.Value},
-                    new ParameterList {ParameterName = "@Required", Parameter = "0"}
+                    new Parameter {ParameterName = "@RequestId", ParameterValue = clientRequestId.ToString()},
+                    new Parameter {ParameterName = "@SkillId", ParameterValue = item.Value},
+                    new Parameter {ParameterName = "@Required", ParameterValue = "0"}
                 };
 
 
