@@ -95,7 +95,7 @@ namespace TPS2.Customer
                 new Parameter {ParameterName = "@City", ParameterValue = CityTextBox.Text},
                 new Parameter {ParameterName = "@Zip", ParameterValue = ZipTextBox.Text},
                 new Parameter {ParameterName = "@State", ParameterValue = StatesListBox.Text},
-                new Parameter {ParameterName = "@Telecommute", ParameterValue = TelecommuteCheckBox.Checked ? "1" : "0"},
+                //new Parameter {ParameterName = "@Telecommute", ParameterValue = TelecommuteCheckBox.Checked ? "1" : "0"},
                 new Parameter {ParameterName = "@RequestorID", ParameterValue = User.Identity.GetUserId()}
             };
             var clientRequestId = _databaseConnection.RunStoredProcReturnId(DBConnect.StoredProcs.InsertClientRequest, parameters);

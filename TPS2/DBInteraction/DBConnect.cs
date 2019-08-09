@@ -60,6 +60,19 @@ namespace TPS2.DBInteraction
         public bool Manager { get; set; }
     }
 
+    public class ClientRequest
+    {
+        public int Id { get; set; }
+        public List<Tuple<int,bool>> Skills { get; set; }
+        public int IdEducation { get; set; }
+        public bool EducationRequired { get; set; }
+        public int Salary { get; set; }
+        public Address Location { get; set; }
+        public string RequesterId { get; set; }
+        public bool Complete { get; set; }
+        public DateTime RequestDate { get; set; }
+        public bool TelecommuteAvail { get; set; }
+    }
     //TODO Fix all the hardcoded methods/functions to use stored procs
 
     public class DBConnect
@@ -76,7 +89,80 @@ namespace TPS2.DBInteraction
             MatchRequest,
             ClearSkills
         }
-        
+
+        public ClientRequest GetRequest(string id)
+        {
+            var req = new ClientRequest();
+            req.Location = new Address();
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select * from ClientRequest cr JOIN RequestAddress ra ON cr.IdLocation = ra.Id where cr.Id =" + id, con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    //public int Id { get; set; }
+                    req.Id = (int)reader["Id"];
+                    //public List<Skill> Skills { get; set; }
+                    //public int IdEducation { get; set; }
+                    req.IdEducation = (int) reader["IdEducation"];
+                    //public bool EducationRequired { get; set; }
+                    req.EducationRequired = (int)reader["EducationRequired"] != 0;
+                    //public int Salary { get; set; }
+                    req.Salary = (int) reader["StartingSalary"];
+                    //public Address Location { get; set; }
+                    req.Location.AddressLine1 = reader["AddressLine1"].ToString();
+                    req.Location.AddressLine2 = reader["AddressLine2"].ToString();
+                    req.Location.City = reader["City"].ToString();
+                    req.Location.Zip = reader["Zip"].ToString();
+                    //public string RequesterId { get; set; }
+                    //public bool Complete { get; set; }
+                    req.Complete = (int) reader["Complete"] != 0;
+                    //public DateTime RequestDate { get; set; }
+                    req.RequestDate = DateTime.Parse(reader["RequestDate"].ToString());
+                }
+
+                cmd.Connection.Close();
+                cmd.Connection.Open();
+                cmd.CommandText = "SELECT * FROM RequestSkills WHERE RequestID = " + req.Id;
+
+                reader = cmd.ExecuteReader();
+
+                req.Skills = new List<Tuple<int, bool>>();
+
+                while (reader.Read())
+                {
+                    req.Skills.Add(new Tuple<int, bool>((int)reader["SkillId"], (int)reader["Required"] != 0));
+                }
+
+                cmd.Connection.Close();
+            }
+
+            return req;
+        }
+
+        public List<Tuple<DateTime,int>> GetUsersRequests(string id)
+        {
+            var dates = new List<Tuple<DateTime,int>>();
+
+            using (var con =
+                new SqlConnection(WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                var cmd = new SqlCommand("select Id, RequestDate from ClientRequest where RequestorId ='" + id + "'", con);
+                cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    //dates.Add(DateTime.Parse(reader["RequestDate"].ToString()));
+                    dates.Add(new Tuple<DateTime, int>(DateTime.Parse(reader["RequestDate"].ToString()),(int)reader["Id"]));
+                }
+                cmd.Connection.Close();
+            }
+
+            return dates;
+        }
+
         public void UpdateUserRoles(string id, Roles roles)
         {
             using (var con =

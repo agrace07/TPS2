@@ -29,8 +29,7 @@
             <asp:DropDownList runat="server" ID="StatesListBox"/>
             <dt>Zip:</dt>
             <asp:TextBox runat="server" ID="ZipTextBox"></asp:TextBox>
-            <dt>Telecommute Available?:</dt>
-            <asp:CheckBox runat="server" ID="TelecommuteCheckBox"/>
+            <%--dt>Telecommute Available?:</dt>            <asp:CheckBox runat="server" ID="TelecommuteCheckBox"/>--%>
         </dl>
         <asp:Button runat="server" ID="SubmitBtn" Text="Submit" OnClick="SubmitBtn_Click"/>
     </div>
